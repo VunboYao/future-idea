@@ -1,0 +1,65 @@
+/* components/card-item/card-item.wxss */
+
+.card {
+  margin-top: 4px;
+  overflow: hidden;
+  background-color: #fff;
+  border-radius: 8rpx;
+}
+
+.card:nth-child(2n) {
+  margin-left: 4px;
+}
+
+.card .poster {
+  width: 100%;
+}
+
+.x {
+  height: 76px;
+  padding: 0 20rpx;
+  overflow: hidden;
+}
+
+.card-title {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card .avatar {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+}
+
+.card .footer {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+}
+
+.footer-nick_name {
+  margin-left: 6rpx;
+  width: 7em;
+  font-size: 24rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #444;
+}
+
+.card-footer_star {
+  margin-left: 4rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.star-warp {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}

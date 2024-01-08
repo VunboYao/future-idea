@@ -1,0 +1,16 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+devDependencies:
+  '@vunbo/config-ts':
+    specifier: ^1.0.8
+    version: 1.0.8
+
+packages:
+
+  /@vunbo/config-ts@1.0.8:
+    resolution: {integrity: sha512-MC0VrRKMkEwhS+p1G9gGG7GToVQci4ahsnxWF/dtXYtTfhT8JqTu12nUNutWCNrQAK6papj+HEGNtbrtnoJE/A==}
+    dev: true

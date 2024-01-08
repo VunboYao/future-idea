@@ -1,0 +1,37 @@
+<!--components/card-item/card-item.wxml-->
+<view
+  class="card"
+  style="width: {{cardWidth}}px;height: {{cardWidth / 3 * 4 + 76}}px;"
+  bind:tap="onDetail"
+  data-item="{{item}}"
+>
+  <image
+    class="poster"
+    src="{{item.poster}}"
+    style="height: {{cardWidth / 3 * 4}}px;"
+  />
+  <view class="x">
+    <view class="card-title">{{item.title}}</view>
+    <view class="footer">
+      <image
+        src="{{item.avatar}}"
+        mode="widthFix"
+        class="avatar"
+      />
+      <text class="footer-nick_name">{{item.user}}</text>
+      <view class="star-warp">
+        <t-icon
+          name="heart"
+          size="28rpx"
+          color="#666"
+          bind:click="onIconTap"
+        />
+        <text class="card-footer_star">{{item.id}}</text>
+      </view>
+    </view>
+  </view>
+  <imagef
+    src="https:www.vunbo.com/api/file/20abe9ed79400c814d8d45412549537e"
+    mode=""
+  />
+</view>

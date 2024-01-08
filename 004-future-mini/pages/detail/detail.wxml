@@ -1,0 +1,19 @@
+<view class="container">
+  <swiper indicator-dots style="width: 100%;height: {{swiperHeight}}px;">
+    <block wx:for="{{list}}" wx:key="*this">
+      <swiper-item>
+        <view class="swiper-item">
+          <image class="img" src="{{item}}" mode="widthFix"/>
+        </view>
+      </swiper-item>
+    </block>
+  </swiper>
+  <view class="detail-content">
+    <view class="detail-title">{{title}}</view>
+    <view
+      class="detail-p"
+      style="padding-bottom: 20px;"
+    />
+    <view class="detail-p">🔥 {{description}}</view>
+  </view>
+</view>

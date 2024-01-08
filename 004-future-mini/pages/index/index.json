@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "t-search": "tdesign-miniprogram/search/search",
+    "card-item": "../../components/card-item/card-item"
+  },
+  "enablePullDownRefresh": true
+}

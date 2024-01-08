@@ -1,0 +1,25 @@
+/* pages/search/search.wxss */
+.search {
+  height: 92rpx;
+  padding: 0 20rpx;
+  background-color: #fff;
+}
+
+.main {
+  flex: 1;
+  padding: 0 4px;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: scroll;
+}
+
+
+.empty {
+  margin-top: 28vh;
+  width: 100%;
+}
+
+.t-empty__image {
+  width: 240rpx !important;
+  height: 240rpx !important;
+}

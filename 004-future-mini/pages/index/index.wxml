@@ -1,0 +1,22 @@
+<!-- index.wxml -->
+<view class="container">
+  <!-- <view class="search">
+    <t-search
+      placeholder="搜索文章"
+      shape="round"
+      bind:focus="onSearch"
+    />
+  </view> -->
+  <view class="main">
+    <card-item
+      wx:for="{{list}}"
+      item="{{item}}"
+      wx:key="id"
+      style="margin-left: {{index % 2 !== 0 ? '4px' : 0}}"
+    />
+    <view
+      wx:if="{{hasFringe}}"
+      style="width: 100%; height: 36px;"
+    ></view>
+  </view>
+</view>

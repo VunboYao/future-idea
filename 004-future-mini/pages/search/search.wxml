@@ -1,0 +1,24 @@
+<!--pages/search/search.wxml-->
+<view class="container">
+  <view class="search">
+    <t-search
+      placeholder="搜索文章"
+      shape="round"
+      focus
+      confirm-type="search"
+      bind:submit="onSearch"
+      bind:clear="onClear"
+    />
+  </view>
+  <view class="main">
+    <card-item
+      wx:for="{{list}}"
+      item="{{item}}"
+      wx:key="id"
+      style="margin-left: {{index % 2 !== 0 ? '4px' : 0}}"
+    />
+    <view class="empty" wx:if="{{!list.length}}">
+      <t-empty icon="info-circle-filled" description="暂无数据" />
+    </view>
+  </view>
+</view>

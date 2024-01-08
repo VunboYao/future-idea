@@ -1,0 +1,5 @@
+/**app.wxss**/
+page {
+  height: 100%;
+  --td-search-height: 78rpx;
+}

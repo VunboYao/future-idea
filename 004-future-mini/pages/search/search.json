@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "t-search": "tdesign-miniprogram/search/search",
+    "card-item": "../../components/card-item/card-item",
+    "t-empty": "tdesign-miniprogram/empty/empty"
+  },
+  "navigationBarTitleText": "搜索"
+}

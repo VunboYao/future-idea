@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/detail/detail",
+    "pages/search/search"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "发现",
+    "navigationBarTextStyle": "black"
+  },
+  "resolveAlias": {
+    "@/*": "/*"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

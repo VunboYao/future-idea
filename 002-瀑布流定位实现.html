@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    div.item {
+      position: absolute;
+      width: 200px;
+      border-radius: 4px;
+      transition: all 1s;
+    }
+
+    div#content {
+      position: relative;
+    }
+
+    .part1 {
+      background-color: rebeccapurple;
+      height: 250px;
+    }
+
+    .part2 {
+      background-color: royalblue;
+      height: 300px;
+    }
+
+    .part3 {
+      background-color: springgreen;
+      height: 350px;
+    }
+
+    .part4 {
+      background-color: darkorange;
+      height: 400px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="content">
+    <div class="item part1">1</div>
+    <div class="item part2">2</div>
+    <div class="item part3">3</div>
+    <div class="item part1">4</div>
+    <div class="item part4">5</div>
+    <div class="item part2">6</div>
+    <div class="item part2">7</div>
+    <div class="item part3">8</div>
+    <div class="item part4">11</div>
+    <div class="item part2">12</div>
+    <div class="item part3">13</div>
+    <div class="item part3">14</div>
+    <div class="item part4">4</div>
+    <div class="item part1">5</div>
+    <div class="item part2">6</div>
+    <div class="item part2">7</div>
+    <div class="item part4">8</div>
+    <div class="item part1">9</div>
+    <div class="item part2">6</div>
+    <div class="item part2">7</div>
+    <div class="item part3">8</div>
+    <div class="item part4">11</div>
+    <div class="item part2">12</div>
+    <div class="item part3">13</div>
+    <div class="item part3">14</div>
+    <div class="item part4">4</div>
+    <div class="item part1">5</div>
+  </div>
+</body>
+<script>
+  function waterFall() {
+    const minGap = 10 // 最小间隔
+    const itemWith = 200 // 单元素宽度
+    const pageWith = document.documentElement.clientWidth // 浏览器窗口页面视口宽度
+    const column = Math.floor(pageWith / (itemWith + minGap))
+    const gap = (pageWith - itemWith * column) / (column + 1) //真实间距 剩余宽度/（列数+1） 前后各一个间距
+    const items = document.querySelectorAll('.item') // 获取所有子元素
+    const heightArr = [] // 保存最低高度
+
+    for (let i = 0; i < items.length; i++) {
+      const height = items[i].offsetHeight
+      if (i < column) {
+        // 第一行
+        /* 
+        根据列数，存储一个基础的数组，包含每一列当前的高度。
+        */
+        items[i].style.cssText = `top:${gap}px;left:${(itemWith + gap) * i + gap}px`
+        heightArr.push(height)
+      } else {
+        // 当item大于一行时，后续的每一个去数组中找最小的列进行定位展示，并更新当前列的高度
+        let minHeight = heightArr[0]
+        let minIndex = 0
+        for (let j = 1; j < heightArr.length; j++) {
+          if (minHeight > heightArr[j]) {
+            minHeight = heightArr[j]
+            minIndex = j
+          }
+        }
+        items[i].style.cssText = `top: ${minHeight + gap * 2}px;left:${(itemWith + gap) * minIndex + gap}px`
+        heightArr[minIndex] += items[i].offsetHeight + gap
+      }
+    }
+  }
+  window.onload = waterFall()
+  window.onresize = function () {
+    waterFall()
+  }
+</script>
+
+</html>

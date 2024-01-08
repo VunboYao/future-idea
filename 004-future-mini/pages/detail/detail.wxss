@@ -1,0 +1,19 @@
+/* pages/detail/detail.wxss */
+.img {
+  width: 100%;
+  height: 100%;
+}
+
+.detail-content {
+  padding: 15px;
+}
+
+.detail-title {
+  font-weight: bold;
+  font-size: 18px;
+  padding-bottom: 3px;
+}
+
+.detail-p {
+  padding-bottom: 2px;
+}
