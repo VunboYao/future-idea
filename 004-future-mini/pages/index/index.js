@@ -1,7 +1,7 @@
 // index.js
 // 获取应用实例
 import { postArticleList } from "@/apis/article.js";
-const app = getApp()
+const app = getApp();
 Page({
   data: {
     hasFringe: false,
@@ -14,40 +14,50 @@ Page({
     autoFocus: true,
   },
   onLoad() {
-    const {hasFringe} = app.globalData
+    const { hasFringe } = app.globalData;
     this.setData({
       hasFringe,
-    })
-    this.initData()
+    });
+    this.initData();
 
     setTimeout(() => {
       this.setData({
-        autoFocus: false
-      })
+        autoFocus: false,
+      });
     }, 3000);
   },
 
-  async initData() { 
-    const {page, limit, hasNext} = this.data
-    if (!hasNext) return false
+  async initData() {
+    const { page, limit, hasNext } = this.data;
+    if (!hasNext) return false;
     const res = await postArticleList({
       page,
-      limit      
-    })
-    this.data.page = page + 1
-    this.data.hasNext = res.data.hasNext
+      limit,
+    });
+    this.data.page = page + 1;
+    this.data.hasNext = res.data.hasNext;
     this.setData({
-      list: [...this.data.list, ...res.data.list]
-    })
+      list: [...this.data.list, ...res.data.list],
+    });
+  },
+
+  onWeb() {
+    wx.navigateTo({
+      url: "/pages/webview/webview",
+    });
   },
 
   onSearch() {
     wx.navigateTo({
-      url: '/pages/search/search',
-    })
+      url: "/pages/search/search",
+    });
   },
 
-  onReachBottom: function() {
-    this.initData()
-  }
-})
+  updateLocation(item) {
+    console.log(item, "拿到路由传递的信息");
+  },
+
+  onReachBottom: function () {
+    this.initData();
+  },
+});

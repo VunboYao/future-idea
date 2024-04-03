@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <title>选择地址</title>
+  <script type="text/javascript">
+    window._AMapSecurityConfig = {
+      securityJsCode: "f2d17505273380de4432eae69e2494d8",
+    };
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      width: 100%;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .map {
+      height: 50vh;
+      width: 100%;
+    }
+
+    .list {
+      padding: 0 0.5rem 1rem;
+      width: 100%;
+      padding: 10px;
+      height: 50vh;
+      overflow: auto;
+      overflow-x: hidden;
+    }
+
+    .list-item {
+      font-size: 1rem;
+      display: flex;
+      flex-direction: column;
+      border-bottom: 0.05rem solid #ddd;
+    }
+
+    .list-item .name {
+      margin-top: 0.5rem;
+    }
+
+    .list-item .address {
+      margin: 0.2rem 0 0.5rem;
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    .mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .toast-x {
+      width: 38%;
+      height: 3rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, .6);
+      border-radius: 0.4rem;
+      font-size: 1.4rem;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 地图容器 -->
+  <div id="container" class="map" tabindex="0"></div>
+
+  <!-- 地址列表 -->
+  <div class="list"></div>
+
+  <!-- 提示容器 -->
+  <div class="mask">
+    <div class="toast-x">
+      加载中...
+    </div>
+  </div>
+  <script type="text/javascript"
+    src='//webapi.amap.com/maps?v=2.0&key=8c5b77839f5f11891ce75389568d17fd&plugin=AMap.ToolBar'></script>
+  <!-- UI组件库 1.0 -->
+  <script src="//webapi.amap.com/ui/1.1/main.js?v=1.1.1"></script>
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+  <script type="text/javascript">
+    // 提示框
+    const elMask = document.querySelector('.mask')
+    // 提示文本
+    const elToast = document.querySelector('.toast-x')
+    // 列表文本
+    const list = document.querySelector('.list')
+
+    // 事件监听
+    let listData = []
+    list.addEventListener('click', function (e) {
+      const target = e.target
+      const index = target.dataset.index || -1
+      if (index >= 0) {
+        const { location } = listData[index]
+        const lng = location.lng
+        const lat = location.lat
+        try {
+          wx.miniProgram.postMessage({ data: listData[index] })
+          wx.miniProgram.navigateBack()
+        } catch (error) {
+          showToast('jsSDK异常')
+        }
+      }
+    })
+
+    // 定位控件
+    let geolocation
+
+    // 2.获取用户的位置权限
+    AMap.plugin('AMap.Geolocation', function () {
+      geolocation = new AMap.Geolocation({
+        enableHighAccuracy: true,//高精定位，默认true，可不写
+        timeout: 10000,// 设置获取定位后的加载时间
+        showButton: true,
+        showCircle: true,
+        buttonOffset: new AMap.Pixel(10, 20), // 定位按钮的偏移量
+        zoomToAccuracy: true,
+        buttonPosition: 'LB'//设置定位按钮的显示位置
+      })
+
+      // 2.1获取定位
+      geolocation.getCurrentPosition(function (status, result) {
+        elMask.style.display = 'none'
+        if (status == 'complete') {
+          // 2.1.1 授权
+          onComplete(result)
+        } else {
+          // 2.1.2 拒绝
+          onError(result)
+        }
+      })
+
+      // 成功授权定位
+      function onComplete(data) {
+        const location = data.position
+        const { lng, lat } = location
+        loadMap(lng, lat)
+      }
+
+      // 拒绝授权定位
+      function onError(data) {
+        // 定位报错处理
+        showToast('定位失败')
+        loadMap()
+      }
+    })
+
+    function loadMap(lng, lat) {
+      // 加载地图插件
+      AMapUI.loadUI(['misc/PositionPicker', 'misc/PoiPicker'], function (PositionPicker, PoiPicker) {
+        var map = new AMap.Map('container', {
+          zoom: 16,
+          scrollWheel: false,
+          center: lat ? [lng, lat] : undefined
+        })
+
+        // 拖动地图控件
+        var positionPicker = new PositionPicker({
+          mode: 'dragMap',
+          map: map
+        });
+        // 加载成功
+        positionPicker.on('success', function (positionResult) {
+          console.log(positionResult);
+          renderList(positionResult)
+        });
+        // 加载失败
+        positionPicker.on('fail', function (positionResult) {
+          showToast('网络异常')
+        });
+        positionPicker.start();
+
+        // 定位控件展示
+        map.addControl(geolocation)
+        // 展示放大缩小
+        map.addControl(new AMap.ToolBar({
+          position: 'LB'
+        }))
+      })
+    }
+
+    // 渲染列表
+    function renderList(positionResult) {
+      list.innerHTML = ''
+      const fragment = document.createDocumentFragment()
+      listData = positionResult.regeocode.pois
+      const len = positionResult.regeocode.pois.length
+      for (let i = 0; i < len; i++) {
+        const item = positionResult.regeocode.pois[i]
+        const { name, address, distance } = item
+        const div = document.createElement('div');
+        div.className = 'list-item'
+        div.innerHTML = `<span class="name" data-index="${i}">${name}</span><span class="address" data-index="${i}">${distance < 100 ? '100m内' : distance + 'm'} | ${address}</span>`
+        fragment.appendChild(div)
+      }
+      list.appendChild(fragment)
+    }
+
+    // 提示文本
+    function showToast(text = "加载中") {
+      elMask.style.display = 'flex'
+      elToast.innerText = text
+      setTimeout(() => {
+        elMask.style.display = 'none'
+      }, 2000)
+    }
+  </script>
+</body>
+
+</html>

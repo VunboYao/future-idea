@@ -1,0 +1,7 @@
+<!--pages/webview/webview.wxml-->
+<web-view
+  src="https://vunbo.com/static/index.html"
+  bindmessage="onMessage"
+></web-view>
+<!-- <web-view src="https://www.amap.com/">
+</web-view> -->

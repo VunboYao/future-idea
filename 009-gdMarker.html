@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <title>标记地址</title>
+  <script type="text/javascript">
+    window._AMapSecurityConfig = {
+      securityJsCode: "f2d17505273380de4432eae69e2494d8",
+    };
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      width: 100%;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .map {
+      height: 70vh;
+      width: 100%;
+    }
+
+    .list {
+      padding: 0 0.5rem 1rem;
+      width: 100%;
+      padding: 10px;
+      height: 30vh;
+      overflow: auto;
+      overflow-x: hidden;
+    }
+
+    .list-item {
+      font-size: 1rem;
+      display: flex;
+      flex-direction: column;
+      border-bottom: 0.05rem solid #ddd;
+    }
+
+    .list-item .name {
+      margin-top: 0.5rem;
+    }
+
+    .list-item .address {
+      margin: 0.2rem 0 0.5rem;
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    .mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .toast-x {
+      width: 38%;
+      height: 3rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, .6);
+      border-radius: 0.4rem;
+      font-size: 1.4rem;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 地图容器 -->
+  <div id="container" class="map" tabindex="0"></div>
+
+  <!-- 地址列表 -->
+  <div class="list"></div>
+
+  <!-- 提示容器 -->
+  <div class="mask">
+    <div class="toast-x">
+      加载中...
+    </div>
+  </div>
+  <script type="text/javascript"
+    src='//webapi.amap.com/maps?v=2.0&key=8c5b77839f5f11891ce75389568d17fd&plugin=AMap.ToolBar'></script>
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+  <script type="text/javascript">
+    // 获取环境区分
+    const env = 'sit'
+    const Cookie = 'Token_Bmp_Manage_SJ=eyJ1c2VySWQiOiJ5eWIiLCJ0b2tlbiI6ImY0YTIxZmIwMzNlODRhOWM4MjAzMGYzMDAwOGZmMzI5Iiwic2lnbmF0dXJlIjpudWxsLCJzaWduUGxhaW50ZXh0IjoiZjRhMjFmYjAzM2U4NGE5YzgyMDMwZjMwMDA4ZmYzMjk7eXliIn0=; Path=/'
+    // 提示框
+    const elMask = document.querySelector('.mask')
+    // 提示文本
+    const elToast = document.querySelector('.toast-x')
+    // 列表文本
+    const list = document.querySelector('.list')
+
+    // 事件监听
+    let listData = []
+    list.addEventListener('click', function (e) {
+      const target = e.target
+      const index = target.dataset.index || -1
+      if (index >= 0) {
+        const { location } = listData[index]
+        const lng = location.lng
+        const lat = location.lat
+        try {
+          wx.miniProgram.postMessage({ data: listData[index] })
+          wx.miniProgram.navigateBack()
+        } catch (error) {
+          showToast('jsSDK异常')
+        }
+      }
+    })
+
+    // 定位控件
+    let geolocation
+
+    // 2.获取用户的位置权限
+    AMap.plugin('AMap.Geolocation', function () {
+      geolocation = new AMap.Geolocation({
+        enableHighAccuracy: true,//高精定位，默认true，可不写
+        timeout: 10000,// 设置获取定位后的加载时间
+        showButton: true,
+        showCircle: true,
+        buttonOffset: new AMap.Pixel(10, 20), // 定位按钮的偏移量
+        zoomToAccuracy: true,
+      })
+
+      // 2.1获取定位
+      geolocation.getCurrentPosition(function (status, result) {
+        elMask.style.display = 'none'
+        if (status == 'complete') {
+          // 2.1.1 授权
+          onComplete(result)
+        } else {
+          // 2.1.2 拒绝
+          onError(result)
+        }
+      })
+
+      // 成功授权定位
+      function onComplete(data) {
+        const location = data.position
+        const { lng, lat } = location
+        loadMap(lng, lat)
+      }
+
+      // 拒绝授权定位
+      function onError(data) {
+        // 定位报错处理
+        showToast('定位失败')
+        loadMap()
+      }
+    })
+
+    function loadMap(lng = 106.647339, lat = 26.647229) {
+      // 绘制地图
+      const map = new AMap.Map("container", {
+        zoom: 16, //地图级别
+        showCircle: true,
+        center: [lng, lat], //地图中心点
+        viewMode: "2D", //设置地图模式
+      });
+
+      //构造矢量圆形
+      const circle = new AMap.Circle({
+        center: new AMap.LngLat(lng, lat), //圆心位置
+        radius: 500, //半径 单位:米
+        strokeColor: "#328af5", //线颜色
+        strokeOpacity: 1, //线透明度
+        strokeWeight: 2, //线粗细度
+        fillColor: "#328af5", //填充颜色
+        fillOpacity: 0.35, //填充透明度
+      });
+
+      // 自己的点即中心点
+      const myPoint = new AMap.Marker({
+        map,
+        position: new AMap.LngLat(lng, lat),
+      });
+
+      // todo: 获取商户列表的经纬度
+      const testArr = [{ "lat": 26.647122, "lng": 106.647339 }, { "lat": 26.645423, "lng": 106.647439 }, { "lat": 26.577945, "lng": 106.71356 }, { "lat": 26.578664, "lng": 106.713173 }, { "lat": 26.578457, "lng": 106.713011 }, { "lat": 26.578448, "lng": 106.712972 }, { "lat": 26.578689, "lng": 106.713027 }, { "lat": 26.57898, "lng": 106.713352 }, { "lat": 26.577772, "lng": 106.713125 }, { "lat": 26.578706, "lng": 106.714168 }, { "lat": 26.578974, "lng": 106.712938 }, { "lat": 26.579233, "lng": 106.713393 }, { "lat": 26.578211, "lng": 106.714673 }, { "lat": 26.579365, "lng": 106.714199 }, { "lat": 26.577489, "lng": 106.714449 }, { "lat": 26.578808, "lng": 106.714754 }, { "lat": 26.579484, "lng": 106.712903 }, { "lat": 26.577074, "lng": 106.71307 }, { "lat": 26.57959, "lng": 106.71405 }, { "lat": 26.578402, "lng": 106.715033 }, { "lat": 26.579136, "lng": 106.714836 }, { "lat": 26.577049, "lng": 106.714429 }, { "lat": 26.579843, "lng": 106.712898 }, { "lat": 26.577536, "lng": 106.71191 }, { "lat": 26.57842, "lng": 106.711673 }, { "lat": 26.579622, "lng": 106.71459 }, { "lat": 26.576695, "lng": 106.713205 }, { "lat": 26.579958, "lng": 106.712864 }, { "lat": 26.579474, "lng": 106.712042 }, { "lat": 26.576873, "lng": 106.714611 }]
+      // 将商户点数据与中心点标记并绑定事件
+      const markerList = [myPoint]
+      testArr.forEach((item, index) => {
+        const marker = new AMap.Marker({
+          position: new AMap.LngLat(item.lng, item.lat),
+          icon: "./shop.png",
+          extData: item
+        });
+        marker.on('click', handleClick)
+        markerList.push(marker)
+      })
+
+      // 事件处理,查询当前点的商户列表
+      function handleClick(e) {
+        const target = e.target.getExtData()
+        console.log(target, '>>>>');
+      }
+      //将创建的点标记添加到已有的地图实例：
+      map.add(markerList);
+      map.add(circle);
+    }
+
+    // 渲染列表
+    function renderList(positionResult) {
+      list.innerHTML = ''
+      const fragment = document.createDocumentFragment()
+      listData = positionResult.regeocode.pois
+      const len = positionResult.regeocode.pois.length
+      for (let i = 0; i < len; i++) {
+        const item = positionResult.regeocode.pois[i]
+        const { name, address, distance } = item
+        const div = document.createElement('div');
+        div.className = 'list-item'
+        div.innerHTML = `<span class="name" data-index="${i}">${name}</span><span class="address" data-index="${i}">${distance < 100 ? '100m内' : distance + 'm'} | ${address}</span>`
+        fragment.appendChild(div)
+      }
+      list.appendChild(fragment)
+    }
+
+    // 提示文本
+    function showToast(text = "加载中") {
+      elMask.style.display = 'flex'
+      elToast.innerText = text
+      setTimeout(() => {
+        elMask.style.display = 'none'
+      }, 2000)
+    }
+
+    axios('admin.store.ListStoreNearby', {
+      latitudeX: '26.647466',
+      longitudeX: '106.647226',
+      limit: 10000,
+      pageType: 'FIRST_PAGE',
+      sortModel: {},
+      model: {
+        mchtName: this.mchtName || ''
+      }
+    })
+    function axios(path, data = {}) {
+      const host = env ? `https://uastestmer.bgzchina.com:8889/${env}` : `https://uasm.bgzchina.com:443`
+      const reqUrl = `${host}/bmp/rpc/${path}`
+
+      return new Promise((resolve, reject) => {
+        fetch(reqUrl, {
+          body: JSON.stringify(data),
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'cookie': document.cookie,
+            'Content-Type': 'application/json'
+          }
+        }).then(res => {
+          res.json().then(data => {
+            resolve(data)
+          })
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    }
+  </script>
+</body>
+
+</html>

@@ -5,15 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
 <body>
   <div id="app">
-    <img src="imgUrl" alt="">
+    <img :src="imgUrl" alt="">
+    <input type="file" id="file">
   </div>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script>
-    const {createApp, ref} = vue
+    const { createApp, ref } = Vue
     createApp({
       setup() {
         return {
@@ -21,6 +22,57 @@
         }
       }
     }).mount('#app')
+
+    document.getElementById('file').addEventListener('change', (e) => {
+      console.log(e.target.files[0]);
+      checkImageFileType(e.target.files[0])
+    })
+
+    // 定义一个函数，接收文件对象作为参数
+    function checkImageFileType(file) {
+      // 读取文件的前几个字节（通常是文件头部）
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        const arr = new Uint8Array(reader.result).subarray(0, 4);
+        // 将读取到的二进制数据转换为十六进制字符串
+        let header = "";
+        for (let i = 0; i < arr.length; i++) {
+          header += arr[i].toString(16);
+          console.log(header);
+        }
+
+        // 根据不同的文件类型标志位判断文件类型
+        let fileType = "";
+        switch (header) {
+          case "89504e47":
+            fileType = "image/png";
+            break;
+          case "ffd8ffe0":
+          case "ffd8ffe1":
+          case "ffd8ffe2":
+            fileType = "image/jpeg";
+            break;
+          case "47494638":
+            fileType = "image/gif";
+            break;
+          default:
+            fileType = "Unknown"; // 未知类型
+            break;
+        }
+
+        // 输出文件类型
+        console.log("文件类型:", fileType);
+      };
+
+      // 读取文件
+      reader.readAsArrayBuffer(file);
+    }
+
+    // 通过input元素选择文件并触发函数
+    document.getElementById('fileInput').addEventListener('change', function (event) {
+      const file = event.target.files[0];
+      checkImageFileType(file);
+    });
   </script>
 </body>
 

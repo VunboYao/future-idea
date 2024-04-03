@@ -2,7 +2,7 @@
   "projectname": "004-future-mini",
   "setting": {
     "compileHotReLoad": true,
-    "urlCheck": false,
+    "urlCheck": true,
     "bigPackageSizeSupport": false
   },
   "libVersion": "3.1.4",

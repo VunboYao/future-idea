@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高德地图</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script type="text/javascript">
+    window._AMapSecurityConfig = {
+      securityJsCode: "f2d17505273380de4432eae69e2494d8",
+    };
+  </script>
+</head>
+
+<body>
+  <div id="container"></div>
+  <script type="text/javascript"
+    src='//webapi.amap.com/maps?v=2.0&key=8c5b77839f5f11891ce75389568d17fd&plugin=AMap.ToolBar'></script>
+  <script>
+    const map = new AMap.Map("container", {
+      zoom: 16, //地图级别
+      showCircle: true,
+      center: [106.713478, 26.578343], //地图中心点
+      viewMode: "2D", //设置地图模式
+    });
+
+    //构造矢量圆形
+    var circle = new AMap.Circle({
+      center: new AMap.LngLat(106.713478, 26.578343), //圆心位置
+      radius: 500, //半径 单位:米
+      strokeColor: "#328af5", //线颜色
+      strokeOpacity: 1, //线透明度
+      strokeWeight: 2, //线粗细度
+      fillColor: "#328af5", //填充颜色
+      fillOpacity: 0.35, //填充透明度
+    });
+
+    //创建一个 Marker 实例：
+    const testArr = [{ "lat": 26.578163, "lng": 106.713164 }, { "lat": 26.578014, "lng": 106.713233 }, { "lat": 26.577945, "lng": 106.71356 }, { "lat": 26.578664, "lng": 106.713173 }, { "lat": 26.578457, "lng": 106.713011 }, { "lat": 26.578448, "lng": 106.712972 }, { "lat": 26.578689, "lng": 106.713027 }, { "lat": 26.57898, "lng": 106.713352 }, { "lat": 26.577772, "lng": 106.713125 }, { "lat": 26.578706, "lng": 106.714168 }, { "lat": 26.578974, "lng": 106.712938 }, { "lat": 26.579233, "lng": 106.713393 }, { "lat": 26.578211, "lng": 106.714673 }, { "lat": 26.579365, "lng": 106.714199 }, { "lat": 26.577489, "lng": 106.714449 }, { "lat": 26.578808, "lng": 106.714754 }, { "lat": 26.579484, "lng": 106.712903 }, { "lat": 26.577074, "lng": 106.71307 }, { "lat": 26.57959, "lng": 106.71405 }, { "lat": 26.578402, "lng": 106.715033 }, { "lat": 26.579136, "lng": 106.714836 }, { "lat": 26.577049, "lng": 106.714429 }, { "lat": 26.579843, "lng": 106.712898 }, { "lat": 26.577536, "lng": 106.71191 }, { "lat": 26.57842, "lng": 106.711673 }, { "lat": 26.579622, "lng": 106.71459 }, { "lat": 26.576695, "lng": 106.713205 }, { "lat": 26.579958, "lng": 106.712864 }, { "lat": 26.579474, "lng": 106.712042 }, { "lat": 26.576873, "lng": 106.714611 }]
+    const markerList = []
+    testArr.forEach((item, index) => {
+      const marker = new AMap.Marker({
+        position: new AMap.LngLat(item.lng, item.lat),
+        icon: "./shop.png"
+      });
+      markerList.push(marker)
+    })
+    //将创建的点标记添加到已有的地图实例：
+    map.add(markerList);
+    map.add(circle);
+    //创建点标记的点击事件
+    markerList.forEach(item => {
+      item.on("click", function (e) {
+        console.log(item);
+        alert("你点击了Marker", item);
+      })
+    })
+  </script>
+</body>
+
+</html>

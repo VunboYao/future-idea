@@ -4,7 +4,7 @@ App({
     this.getSystemInfo();
     this.getMenuButtonBoundingClientRect();
   },
-    /**
+  /**
    * 全局数据
    */
   globalData: {
@@ -15,7 +15,7 @@ App({
     // 是否有刘海
     hasFringe: false,
     // 导航栏高度.systemInfo.statusBarHeight + 44
-    navHeight: 0
+    navHeight: 0,
   },
   /**
    * 获取手机系统数据
@@ -25,22 +25,19 @@ App({
       success: (res) => {
         this.globalData.systemInfo = res;
         this.setSafeArea();
-      }
-    })
+      },
+    });
   },
-    /**
+  /**
    * 设置安全域
    */
   setSafeArea() {
-    const {
-      system,
-      statusBarHeight
-    } = this.globalData.systemInfo;
+    const { system, statusBarHeight } = this.globalData.systemInfo;
     console.log(statusBarHeight);
-    if (system.startsWith('iOS') && statusBarHeight >= 44) {
-      this.globalData.hasFringe = true
+    if (system.startsWith("iOS") && statusBarHeight >= 44) {
+      this.globalData.hasFringe = true;
     }
-    this.globalData.navHeight = statusBarHeight + 44
+    this.globalData.navHeight = statusBarHeight + 44;
   },
 
   /**
@@ -48,5 +45,5 @@ App({
    */
   getMenuButtonBoundingClientRect() {
     this.globalData.menuButtonBoundingClientRect = wx.getMenuButtonBoundingClientRect();
-  }
-})
+  },
+});
